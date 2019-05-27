@@ -5,7 +5,7 @@ import { insist } from '../insist';
 export default function makeVatKeeper(
   kvstore,
   pathToRoot,
-  makeExternalKVStore,
+  makePassThroughlKVStore,
   external,
 ) {
   function createStartingVatState() {
@@ -16,11 +16,11 @@ export default function makeVatKeeper(
 
     kvstore.set(
       'kernelSlotToVatSlot',
-      makeExternalKVStore(pathToRoot, external),
+      makePassThroughlKVStore(pathToRoot, external),
     );
     kvstore.set(
       'vatSlotToKernelSlot',
-      makeExternalKVStore(pathToRoot, external),
+      makePassThroughlKVStore(pathToRoot, external),
     );
 
     const kernelSlotToVatSlot = kvstore.get('kernelSlotToVatSlot');
@@ -28,39 +28,39 @@ export default function makeVatKeeper(
 
     kernelSlotToVatSlot.set(
       'exports',
-      makeExternalKVStore(pathToRoot, external),
+      makePassThroughlKVStore(pathToRoot, external),
     );
     kernelSlotToVatSlot.set(
       'devices',
-      makeExternalKVStore(pathToRoot, external),
+      makePassThroughlKVStore(pathToRoot, external),
     );
     kernelSlotToVatSlot.set(
       'promises',
-      makeExternalKVStore(pathToRoot, external),
+      makePassThroughlKVStore(pathToRoot, external),
     );
     kernelSlotToVatSlot.set(
       'resolvers',
-      makeExternalKVStore(pathToRoot, external),
+      makePassThroughlKVStore(pathToRoot, external),
     );
 
     vatSlotToKernelSlot.set(
       'imports',
-      makeExternalKVStore(pathToRoot, external),
+      makePassThroughlKVStore(pathToRoot, external),
     );
     vatSlotToKernelSlot.set(
       'deviceImports',
-      makeExternalKVStore(pathToRoot, external),
+      makePassThroughlKVStore(pathToRoot, external),
     );
     vatSlotToKernelSlot.set(
       'promises',
-      makeExternalKVStore(pathToRoot, external),
+      makePassThroughlKVStore(pathToRoot, external),
     );
     vatSlotToKernelSlot.set(
       'resolvers',
-      makeExternalKVStore(pathToRoot, external),
+      makePassThroughlKVStore(pathToRoot, external),
     );
 
-    kvstore.set('nextIDs', makeExternalKVStore(pathToRoot, external));
+    kvstore.set('nextIDs', makePassThroughlKVStore(pathToRoot, external));
     const nextIDs = kvstore.get('nextIDs');
     nextIDs.set('import', 10);
     nextIDs.set('promise', 20);

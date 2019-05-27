@@ -10,17 +10,17 @@ import makeDeviceManager from './deviceManager';
 import makeKernelKeeper from './state/kernelKeeper';
 import makeVatKeeper from './state/vatKeeper';
 import makeDeviceKeeper from './state/deviceKeeper';
-import makeExternalKVStore from './externalKVStore';
+import makePassThroughKVStore from './passThroughKVStore';
 
 export default function buildKernel(kernelEndowments, external) {
   const { setImmediate } = kernelEndowments;
 
-  const kernelKVStore = makeExternalKVStore('kernel', external);
+  const kernelKVStore = makePassThroughKVStore('kernel', external);
 
   const kernelKeeper = makeKernelKeeper(
     kernelKVStore,
     'kernel',
-    makeExternalKVStore,
+    makePassThroughKVStore,
     external,
   );
 
@@ -244,11 +244,11 @@ export default function buildKernel(kernelEndowments, external) {
     });
 
     const vatPath = `kernel.vats.${vatID}`;
-    const vatKVStore = makeExternalKVStore(vatPath, external);
+    const vatKVStore = makePassThroughlKVStore(vatPath, external);
     const vatKeeper = makeVatKeeper(
       vatKVStore,
       vatPath,
-      makeExternalKVStore,
+      makePassThroughlKVStore,
       external,
     );
 
@@ -284,11 +284,11 @@ export default function buildKernel(kernelEndowments, external) {
     });
 
     const devicePath = `kernel.devices.${name}`;
-    const deviceKVStore = makeExternalKVStore(devicePath, external);
+    const deviceKVStore = makePassThroughlKVStore(devicePath, external);
     const deviceKeeper = makeDeviceKeeper(
       deviceKVStore,
       devicePath,
-      makeExternalKVStore,
+      makePassThroughlKVStore,
       external,
     );
 

@@ -1,6 +1,6 @@
 import stringify from './json-stable-stringify';
 
-export default function makeExternalKVStore(pathToRoot, external) {
+export default function makePassThroughKVStore(pathToRoot, external) {
   // kvstore has set, get, has, delete methods
   // set (key []byte, value []byte)
   // get (key []byte)  => value []byte
@@ -18,7 +18,7 @@ export default function makeExternalKVStore(pathToRoot, external) {
       );
       const value = JSON.parse(strValue);
       if (value === 'kvstore') {
-        return makeExternalKVStore(`${pathToRoot}.${key}`, external);
+        return makePassThroughKVStore(`${pathToRoot}.${key}`, external);
       }
       return value;
     },
@@ -66,7 +66,10 @@ export default function makeExternalKVStore(pathToRoot, external) {
         if (entry.value === 'kvstore') {
           results.push({
             key: entry.key,
-            value: makeExternalKVStore(`${pathToRoot}.${entry.key}`, external),
+            value: makePassThroughKVStore(
+              `${pathToRoot}.${entry.key}`,
+              external,
+            ),
           });
         } else {
           results.push(entry);
@@ -86,7 +89,7 @@ export default function makeExternalKVStore(pathToRoot, external) {
       for (const entry of entries) {
         if (entry.value === 'kvstore') {
           values.push(
-            makeExternalKVStore(`${pathToRoot}.${entry.key}`, external),
+            makePassThroughKVStore(`${pathToRoot}.${entry.key}`, external),
           );
         } else {
           values.push(entry.value);

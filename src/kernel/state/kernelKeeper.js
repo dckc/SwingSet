@@ -2,7 +2,7 @@ import harden from '@agoric/harden';
 import makeVatKeeper from './vatKeeper';
 import makeDeviceKeeper from './deviceKeeper';
 
-function makeKernelKeeper(kvstore, pathToRoot, makeExternalKVStore, external) {
+function makeKernelKeeper(kvstore, pathToRoot, makePassThroughlKVStore, external) {
   // kvstore has set, get, has, delete methods
   // set (key []byte, value []byte)
   // get (key []byte)  => value []byte
@@ -12,10 +12,10 @@ function makeKernelKeeper(kvstore, pathToRoot, makeExternalKVStore, external) {
 
   function createStartingKernelState() {
     kvstore.set('log', []);
-    kvstore.set('vats', makeExternalKVStore(pathToRoot, external));
-    kvstore.set('devices', makeExternalKVStore(pathToRoot, external));
+    kvstore.set('vats', makePassThroughlKVStore(pathToRoot, external));
+    kvstore.set('devices', makePassThroughlKVStore(pathToRoot, external));
     kvstore.set('runQueue', []);
-    kvstore.set('kernelPromises', makeExternalKVStore(pathToRoot, external));
+    kvstore.set('kernelPromises', makePassThroughlKVStore(pathToRoot, external));
     kvstore.set('nextPromiseIndex', 40);
   }
 

@@ -6,85 +6,24 @@ import harden from '@agoric/harden';
 import Nat from '@agoric/nat';
 import SES from 'ses';
 
+import merk from 'merk';
+import levelup from 'levelup';
+import leveldown from 'leveldown';
+
 import kernelSourceFunc from './bundles/kernel';
 import buildKernelNonSES from './kernel/index';
 import bundleSource from './build-source-bundle';
 
-import makeKVStore from './kernel/kvstore';
+import makeMerkWrapper from './externalState/merk/merkWrapper';
 
-export function makeExternal() {
-  const outsideRealmKVStore = makeKVStore({});
-  const external = harden({
-    sendMsg(msg) {
-      const command = JSON.parse(msg);
-      const { method, key } = command;
-      if (key.includes('undefined')) {
-        throw new Error(`key ${key} includes undefined`);
-      }
-      let result;
-      switch (method) {
-        case 'get': {
-          result = outsideRealmKVStore.get(key);
-          break;
-        }
-        case 'set': {
-          const { value } = command;
-          outsideRealmKVStore.set(key, value);
-          break;
-        }
-        case 'has': {
-          const bool = outsideRealmKVStore.has(key);
-          result = [bool]; // JSON compatibility
-          break;
-        }
-        case 'delete': {
-          outsideRealmKVStore.delete(key);
-          break;
-        }
-        case 'keys': {
-          result = outsideRealmKVStore.keys(key);
-          break;
-        }
-        case 'entries': {
-          result = outsideRealmKVStore.entries(key);
-          break;
-        }
-        case 'values': {
-          result = outsideRealmKVStore.values(key);
-          break;
-        }
-        case 'size': {
-          result = outsideRealmKVStore.size(key);
-          break;
-        }
-        default:
-          throw new Error(`unexpected message to kvstore ${msg}`);
-      }
-      // console.log(msg, '=>', result);
-      if (result === undefined) {
-        return JSON.stringify(null);
-      }
-      return JSON.stringify(result);
-    },
-  });
-
-  return external;
+async function loadState(basedir) {
+  const stateDB = levelup(leveldown(path.resolve(basedir, './state')));
+  const merkState = await merk(stateDB);
+  const merkWrapper = makeMerkWrapper(merkState);
+  return merkWrapper;
 }
 
-// TODO: change completely to either KVStore or merk levelDB
-function loadState(basedir, stateArg) {
-  let state;
-  const stateFile = path.resolve(basedir, 'state.json');
-  try {
-    const stateData = fs.readFileSync(stateFile);
-    state = JSON.parse(stateData);
-  } catch (e) {
-    state = stateArg;
-  }
-  return state;
-}
-
-export function loadBasedir(basedir, stateArg) {
+export function loadBasedir(basedir, _stateArg) {
   console.log(`= loading config from basedir ${basedir}`);
   const vatSources = new Map();
   const subs = fs.readdirSync(basedir, { withFileTypes: true });
@@ -108,7 +47,7 @@ export function loadBasedir(basedir, stateArg) {
   } catch (e) {
     bootstrapIndexJS = undefined;
   }
-  const state = loadState(basedir, stateArg);
+  const state = loadState(basedir);
   return { vatSources, bootstrapIndexJS, state };
 }
 
@@ -124,7 +63,7 @@ function makeEvaluate(e) {
   return (source, endowments = {}) => confineExpr(source, endowments);
 }
 
-function buildSESKernel() {
+function buildSESKernel(state) {
   const s = SES.makeSESRootRealm({
     consoleMode: 'allow',
     errorStackMode: 'allow',
@@ -141,21 +80,22 @@ function buildSESKernel() {
   // console.log('building kernel');
   const buildKernel = s.evaluate(kernelSource, { require: r })();
   const kernelEndowments = { setImmediate };
-  const external = makeExternal();
-  const kernel = buildKernel(kernelEndowments, external);
+  const kernel = buildKernel(kernelEndowments, state);
   return { kernel, s, r };
 }
 
-function buildNonSESKernel() {
+function buildNonSESKernel(state) {
   const kernelEndowments = { setImmediate };
-  const external = makeExternal();
-  const kernel = buildKernelNonSES(kernelEndowments, external);
+  const kernel = buildKernelNonSES(kernelEndowments, state);
   return { kernel };
 }
 
 export async function buildVatController(config, withSES = true, argv = []) {
+  const { state } = config;
   // console.log('in main');
-  const { kernel, s, r } = withSES ? buildSESKernel() : buildNonSESKernel();
+  const { kernel, s, r } = withSES
+    ? buildSESKernel(state)
+    : buildNonSESKernel(state);
   // console.log('kernel', kernel);
 
   async function addVat(vatID, sourceIndex, _options) {
@@ -241,8 +181,40 @@ export async function buildVatController(config, withSES = true, argv = []) {
       kernel.callBootstrap(`${vatID}`, JSON.stringify(bootstrapArgv));
     },
 
-    getState() {
-      return JSON.parse(JSON.stringify(kernel.getState()));
+    async commitState() {
+      await merk.commit(state);
+    },
+
+    getRootHash() {
+      return merk.hash(state);
+    },
+
+    async queryState(pathStr, _height) {
+      // pathStr is / delineated coming in,
+      // but merk needs . delineation.
+      function slashToDot(slashPath) {
+        return slashPath.replace(/\//g, '.');
+      }
+
+      const dotPath = slashToDot(pathStr);
+
+      // we ignore height for now and only get the latest
+      // TODO: use height
+      const proof = await merk.proof(state, dotPath);
+      const rootHash = merk.hash(state);
+
+      const value = merk.verify(rootHash, proof, dotPath);
+      // return {
+      //   index: // The index of the key in the tree.
+      //   key: // Key ([]byte): The key of the matching data.
+      //   value: // Value ([]byte): The value of the matching data.
+      //   proof, // Proof (Proof): Serialized proof for the value data, if requested, to be verified against the AppHash for the given Height.
+      // }
+      return {
+        key: pathStr,
+        value,
+        proof,
+      };
     },
   });
 
@@ -262,16 +234,6 @@ export async function buildVatController(config, withSES = true, argv = []) {
 
   if (config.bootstrapIndexJS) {
     await addVat('_bootstrap', config.bootstrapIndexJS, {});
-  }
-
-  if (config.state) {
-    await kernel.loadState(config.state);
-    console.log(`loadState complete`);
-  } else if (config.bootstrapIndexJS) {
-    // we invoke obj[0].bootstrap with an object that contains 'vats' and
-    // 'argv'.
-    console.log(`=> queueing bootstrap()`);
-    kernel.callBootstrap('_bootstrap', JSON.stringify(argv));
   }
 
   return controller;
