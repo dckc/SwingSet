@@ -229,3 +229,18 @@ test('run contractHost Demo --covered-call-sale without SES', async t => {
   t.deepEquals(dump.log, contractCoveredCallSaleGolden);
   t.end();
 });
+
+const auctionTrivialGolden = [
+  '=> setup called',
+  'starting trivialAuctionTest',
+  'foo xfer balance {"label":{"issuer":{},"description":"contract host"},"quantity":{"label":{"identity":{},"description":{"installation":{},"terms":"foo terms","seatDesc":"foo"}},"quantity":1}}',
+  '++ eightP resolved to 8 (should be 8)',
+  '++ DONE',
+  'foo xfer balance {"label":{"issuer":{},"description":"contract host"},"quantity":null}',
+];
+
+test.only('run auctioneer Demo --trivial with SES', async t => {
+  const dump = await main(true, 'demo/contractHost', ['auctioneertrivial']);
+  t.deepEquals(dump.log, auctionTrivialGolden);
+  t.end();
+});

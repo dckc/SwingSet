@@ -4,6 +4,7 @@ import harden from '@agoric/harden';
 
 import { escrowExchangeSrc } from './escrow';
 import { coveredCallSrc } from './coveredCall';
+import { auctioneerSrc } from './auctioneer';
 
 function build(E, log) {
   // TODO BUG: All callers should wait until settled before doing
@@ -314,6 +315,54 @@ function build(E, log) {
     });
   }
 
+  function simpleAuctionTest(host, peter, mint, alan, barb) {
+    const auctioneerInstallationP = E(host).install(auctioneerSrc);
+
+    const moneyMintP = E(mint).makeMint('simoleans');
+    const alanMoneyPurseP = E(moneyMintP).mint(1000, 'alanMainMoney');
+    const barbMoneyPurseP = E(moneyMintP).mint(1001, 'barbMainMoney');
+
+    const goodsMintP = E(mint).makeMint('daVinci');
+    const goodsPeterPurseP = E(goodsMintP).mint(1, 'SalvadorMundi');
+    const alanGoodsPurseP = E(goodsMintP).mint(0, 'SalvadorMundi');
+    const barbGoodsPurseP = E(goodsMintP).mint(0, 'SalvadorMundi');
+
+    const alanP = E(alan).init(
+      alanMoneyPurseP,
+      auctioneerInstallationP,
+      alanGoodsPurseP,
+      27,
+    );
+    const barbP = E(barb).init(
+      barbMoneyPurseP,
+      auctioneerInstallationP,
+      barbGoodsPurseP,
+      45,
+    );
+    const peterP = E(peter).init(
+      fakeNeverTimer, // unused currently
+      E(moneyMintP).getIssuer(),
+      goodsPeterPurseP,
+      auctioneerInstallationP,
+    );
+
+    return Promise.all([alanP, barbP, peterP]).then(_ => {
+      E(peterP)
+        .offerAuction(alanP, barbP)
+        .then(
+          res => {
+            showPurseBalances('alan money', alanMoneyPurseP);
+            showPurseBalances('alan goods', alanGoodsPurseP);
+            showPurseBalances('barb money', barbMoneyPurseP);
+            showPurseBalances('barb goods', barbGoodsPurseP);
+            log('++ Peter.offerAuction done:', res);
+            log('++ DONE');
+          },
+          rej => log('++ Peter.offerAuction reject: ', rej),
+        );
+    });
+  }
+
   const obj0 = {
     async bootstrap(argv, vats) {
       switch (argv[0]) {
@@ -365,6 +414,13 @@ function build(E, log) {
             bobMaker,
             fredMaker,
           );
+        }
+        case 'auction-simple': {
+          const host = await E(vats.host).makeHost();
+          const peter = await E(vats.peter).makePeter(host);
+          const alan = await E(vats.alan).makeAlan(host);
+          const barb = await E(vats.barb).makeBarb(host);
+          return simpleAuctionTest(host, peter, vats.mint, alan, barb);
         }
         default: {
           throw new Error(`unrecognized argument value ${argv[0]}`);
