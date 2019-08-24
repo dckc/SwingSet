@@ -19,4 +19,11 @@ module.exports = {
     'no-loop-func': 'off',
     'import/prefer-default-export': 'off', // contrary to Agoric standard
   },
+  settings: {
+    "import/resolver": {
+      node: {
+        paths: [ "src" ]
+      }
+    }
+  }
 };

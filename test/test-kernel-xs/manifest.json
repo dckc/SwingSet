@@ -1,4 +1,23 @@
 {
-    "include": [ "$(MODDABLE)/examples/manifest_base.json" ],
-    "modules": { "*": [ "./main" ] }
+    "include": [
+        "$(MODDABLE)/examples/manifest_base.json"
+    ],
+    "modules": {
+        "*": [
+            "./main"
+        ],
+        "./moddableTimer": [
+            "./moddableTimer"
+        ],
+        "kernel/*": [
+            "../../src/kernel/*"
+        ],
+
+        "@agoric/harden": "harden-xs/harden.esm",
+        "@agoric/make-hardener": "../../node_modules/@agoric/make-hardener/index",
+        "@agoric/nat": "../../node_modules/@agoric/nat/dist/nat.esm",
+        "@agoric/marshal": "../../node_modules/@agoric/marshal/marshal",
+
+        "tape": "npm_facade/tape"
+    }
 }
