@@ -339,12 +339,14 @@ function getAnonIntrinsics(global) {
       registerIteratorProtos(result, new Set(), 'SetIteratorPrototype');
     }
 
+    const xs = true;
+
     // Get the ES6 %GeneratorFunction% intrinsic, if present.
     if (getProto(Generator) !== Function.prototype) {
       throw new Error('Generator.__proto__ was not Function.prototype');
     }
     const GeneratorFunction = Generator.constructor;
-    if (getProto(GeneratorFunction) !== Function.prototype.constructor) {
+    if (!xs && getProto(GeneratorFunction) !== Function.prototype.constructor) {
       throw new Error(
         'GeneratorFunction.__proto__ was not Function.prototype.constructor',
       );
@@ -360,7 +362,7 @@ function getAnonIntrinsics(global) {
       throw new Error('AsyncGenerator.__proto__ was not Function.prototype');
     }
     const AsyncGeneratorFunction = AsyncGenerator.constructor;
-    if (getProto(AsyncGeneratorFunction) !== Function.prototype.constructor) {
+    if (!xs && getProto(AsyncGeneratorFunction) !== Function.prototype.constructor) {
       throw new Error(
         'GeneratorFunction.__proto__ was not Function.prototype.constructor',
       );
@@ -382,7 +384,7 @@ function getAnonIntrinsics(global) {
       );
     }
     const AsyncFunction = AsyncFunctionPrototype.constructor;
-    if (getProto(AsyncFunction) !== Function.prototype.constructor) {
+    if (!xs && getProto(AsyncFunction) !== Function.prototype.constructor) {
       throw new Error(
         'AsyncFunction.__proto__ was not Function.prototype.constructor',
       );
@@ -1322,7 +1324,8 @@ function buildTable(global) {
         }
         return;
       }
-      if (whiteTable.has(value)) {
+      const xs = true;
+      if (!xs && whiteTable.has(value)) {
         throw new Error('primordial reachable through multiple paths');
       }
       whiteTable.set(value, permit);
