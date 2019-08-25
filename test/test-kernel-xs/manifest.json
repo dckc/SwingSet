@@ -19,5 +19,8 @@
         "@agoric/marshal": "../../node_modules/@agoric/marshal/marshal",
 
         "tape": "npm_facade/tape"
+    },
+    "creation": {
+        "stack": 4096
     }
 }

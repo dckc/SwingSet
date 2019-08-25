@@ -5,6 +5,7 @@ import { test } from 'tape';
 import makePromise from 'kernel/makePromise';
 
 import testQueuePriority from './test-queue-priority';
+import testMarshal from './test-marshal';
 
 // import { makeCommsSlots } from './commsSlots/index';
 
@@ -21,6 +22,7 @@ export default function main() {
   });
 
   testQueuePriority(test);
+  testMarshal(test);
 
   /*
     test('build kernel', async t => {
