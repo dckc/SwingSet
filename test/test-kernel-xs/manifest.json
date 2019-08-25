@@ -6,8 +6,8 @@
         "*": [
             "./main"
         ],
-        "./moddableTimer": [
-            "./moddableTimer"
+        "./*": [
+            "./*"
         ],
         "kernel/*": [
             "../../src/kernel/*"
