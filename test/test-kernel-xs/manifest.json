@@ -16,6 +16,7 @@
         "@agoric/harden": "harden-xs/harden.esm",
         "@agoric/make-hardener": "../../node_modules/@agoric/make-hardener/index",
         "@agoric/nat": "../../node_modules/@agoric/nat/dist/nat.esm",
+        "@agoric/eventual-send": "../../node_modules/@agoric/eventual-send/dist/eventual-send.esm",
         "@agoric/marshal": "../../node_modules/@agoric/marshal/marshal",
 
         "tape": "npm_facade/tape"

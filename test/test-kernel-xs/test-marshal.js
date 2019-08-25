@@ -162,7 +162,7 @@ export default function t1(test) {
     t.end();
   });
 
-  test.skip('serialize exports', t => {
+  test('serialize exports', t => {
     const { m } = makeMarshaller();
     const ser = val => m.serialize(val);
     const o1 = harden({});
@@ -188,7 +188,7 @@ export default function t1(test) {
     t.end();
   });
 
-  test.skip('deserialize imports', t => {
+  test('deserialize imports', t => {
     const { m } = makeMarshaller();
     const a = m.unserialize('{"@qclass":"slot","index":0}', [
       { type: 'import', id: 1 },
@@ -214,7 +214,7 @@ export default function t1(test) {
     t.end();
   });
 
-  test.skip('deserialize exports', t => {
+  test('deserialize exports', t => {
     const { m } = makeMarshaller();
     const o1 = harden({});
     m.serialize(o1); // allocates slot=1
@@ -226,7 +226,7 @@ export default function t1(test) {
     t.end();
   });
 
-  test.skip('serialize imports', t => {
+  test('serialize imports', t => {
     const { m } = makeMarshaller();
     const a = m.unserialize('{"@qclass":"slot","index":0}', [
       { type: 'import', id: 1 },
@@ -284,7 +284,7 @@ export default function t1(test) {
     t.end();
   });
 
-  test.skip('unserialize promise', t => {
+  test('unserialize promise', t => {
     const log = [];
     const syscall = {
       subscribe(promiseID) {

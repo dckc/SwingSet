@@ -66,6 +66,9 @@ export async function test(label, run) {
     notOk(a) {
       result = !a;
     },
+    is(a, b) {
+      result = Object.is(a, b);
+    },
   });
 
   try {

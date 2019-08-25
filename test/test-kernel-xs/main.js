@@ -1,6 +1,7 @@
 /* global trace */
 
 import { test } from 'tape';
+import maybeExtendPromise from '@agoric/eventual-send';
 
 import makePromise from 'kernel/makePromise';
 
@@ -9,6 +10,7 @@ import testQueuePriority from './test-queue-priority';
 import testMarshal from './test-marshal';
 
 global.console = console; // used in @agoric/marshal
+global.Promise = maybeExtendPromise(Promise);
 
 // import { makeCommsSlots } from './commsSlots/index';
 
