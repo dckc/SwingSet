@@ -68,7 +68,11 @@ export async function test(label, run) {
     },
   });
 
-  await run(t);
+  try {
+    await run(t);
+  } catch (ex) {
+    fail(`thrown: ${ex.message}`);
+  }
 
   if (result === null) {
     fail('not ended');
