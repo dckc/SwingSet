@@ -4,12 +4,15 @@ import { test } from 'tape';
 
 import makePromise from 'kernel/makePromise';
 
+import { console } from './console';
 import testQueuePriority from './test-queue-priority';
 import testMarshal from './test-marshal';
 
+global.console = console; // used in @agoric/marshal
+
 // import { makeCommsSlots } from './commsSlots/index';
 
-//import buildKernel from './kernel';
+// import buildKernel from './kernel';
 
 // import buildKernel from 'src/kernel/index';
 

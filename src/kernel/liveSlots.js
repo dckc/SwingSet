@@ -1,7 +1,7 @@
 import harden from '@agoric/harden';
 import Nat from '@agoric/nat';
 import { QCLASS, mustPassByPresence, makeMarshal } from '@agoric/marshal';
-import makePromise from './makePromise';
+import makePromise from 'kernel/makePromise';
 
 // 'makeLiveSlots' is a dispatcher which uses javascript Maps to keep track
 // of local objects which have been exported. These cannot be persisted

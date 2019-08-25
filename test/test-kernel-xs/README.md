@@ -33,6 +33,8 @@ settings:
       paths: [ src ]
 ```
 
+darn; breaks vs-code's goto definition, though. :-/
+
 ## Using tape and other npm goodies
 
 maybe https://jspm.io/ ?
