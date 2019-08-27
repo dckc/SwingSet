@@ -18,9 +18,11 @@ function maybeExtendPromise(Promise) {
     return Promise;
   }
 
-  const presenceToHandler = new WeakMap();
-  const presenceToPromise = new WeakMap();
-  const promiseToHandler = new WeakMap();
+  // xs doesn't support WeakMap in pre-loaded closures
+  // aka "vetted customization code"
+  let presenceToHandler;
+  let presenceToPromise;
+  let promiseToHandler;
 
   // This special handler accepts Promises, and forwards
   // handled Promises to their corresponding fulfilledHandler.
@@ -103,6 +105,12 @@ function maybeExtendPromise(Promise) {
       },
 
       makeHandled(executor, unfulfilledHandler = undefined) {
+        if (!presenceToHandler) {
+          presenceToHandler = new WeakMap();
+          presenceToPromise = new WeakMap();
+          promiseToHandler = new WeakMap();
+        }
+
         let handledResolve;
         let handledReject;
         let continueForwarding = () => {};
