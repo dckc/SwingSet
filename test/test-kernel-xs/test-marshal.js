@@ -130,7 +130,7 @@ export default function t1(test) {
     t.end();
   });
 
-  test.skip('serialize ibid cycle', t => {
+  test('serialize ibid cycle', t => {
     const m = makeMarshal();
     const ser = val => m.serialize(val);
     const cycle = ['a', 'x', 'c'];
