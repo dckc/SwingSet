@@ -23,6 +23,13 @@ function maybeExtendPromise(Promise) {
   let presenceToHandler;
   let presenceToPromise;
   let promiseToHandler;
+  function ensureMaps() {
+    if (!presenceToHandler) {
+      presenceToHandler = new WeakMap();
+      presenceToPromise = new WeakMap();
+      promiseToHandler = new WeakMap();
+    }
+  }
 
   // This special handler accepts Promises, and forwards
   // handled Promises to their corresponding fulfilledHandler.
@@ -96,6 +103,7 @@ function maybeExtendPromise(Promise) {
     Promise,
     Object.getOwnPropertyDescriptors({
       resolve(value) {
+        ensureMaps();
         // Resolving a Presence returns the pre-registered handled promise.
         const handledPromise = presenceToPromise.get(value);
         if (handledPromise) {
@@ -105,12 +113,7 @@ function maybeExtendPromise(Promise) {
       },
 
       makeHandled(executor, unfulfilledHandler = undefined) {
-        if (!presenceToHandler) {
-          presenceToHandler = new WeakMap();
-          presenceToPromise = new WeakMap();
-          promiseToHandler = new WeakMap();
-        }
-
+        ensureMaps();
         let handledResolve;
         let handledReject;
         let continueForwarding = () => {};
