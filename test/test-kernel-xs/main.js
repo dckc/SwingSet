@@ -4,6 +4,8 @@ import { test } from 'tape';
 import maybeExtendPromise from '@agoric/eventual-send';
 
 import makePromise from 'kernel/makePromise';
+// import makePromise from 'kernel/makePromise';
+// import buildKernel from 'kernel/index';
 
 import { console } from './console';
 import testQueuePriority from './test-queue-priority';
@@ -13,10 +15,6 @@ global.console = console; // used in @agoric/marshal
 global.Promise = maybeExtendPromise(Promise);
 
 // import { makeCommsSlots } from './commsSlots/index';
-
-// import buildKernel from './kernel';
-
-// import buildKernel from 'src/kernel/index';
 
 export default function main() {
   trace('hi from test-kernel-xs with build task\n');
