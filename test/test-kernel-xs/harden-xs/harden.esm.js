@@ -19,6 +19,16 @@
 // then copied from proposal-frozen-realms deep-freeze.js
 // then copied from SES/src/bundle/deepFreeze.js
 
+// ack: mroch Nov 15, 2016
+// https://github.com/facebook/flow/issues/2814#issuecomment-260709706
+function allstr(quasis, args) {
+  const parts = [quasis[0]];
+  for (let i = 1; i < quasis.length; i += 1) {
+    parts.push(String(args[i - 1]), quasis[i]);
+  }
+  console.log(parts.join(''));
+}
+
 function makeHardener(initialFringe) {
   const { freeze, getOwnPropertyDescriptors, getPrototypeOf } = Object;
   const { ownKeys } = Reflect;
@@ -108,7 +118,7 @@ function makeHardener(initialFringe) {
         if (!(toFreeze.has(p) || fringeSet.has(p))) {
           // all reachable properties have already been frozen by this point
           throw new TypeError(
-            `prototype ${p} of ${path} is not already in the fringeSet`,
+            allstr`prototype ${p} of ${path} is not already in the fringeSet`,
           );
         }
       });
