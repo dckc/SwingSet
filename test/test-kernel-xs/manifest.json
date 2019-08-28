@@ -2,9 +2,11 @@
     "include": [
         "$(MODDABLE)/examples/manifest_base.json"
     ],
+    "preload": [ "preload" ],
     "modules": {
         "*": [
-            "./main"
+            "./main",
+            "./preload"
         ],
         "./*": [
             "./*"
