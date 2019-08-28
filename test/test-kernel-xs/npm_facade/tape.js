@@ -15,7 +15,17 @@ function deepEqual(x, y) {
     (typeof y === 'object' && y != null)
   ) {
     if (Object.keys(x).length !== Object.keys(y).length) {
-      return false;
+      const detail = JSON.stringify({
+        actual: {
+          length: Object.keys(x).length,
+          keys: Object.keys(x),
+        },
+        expected: {
+          length: Object.keys(y).length,
+          keys: Object.keys(y),
+        },
+      });
+      throw new Error(`Object keys length: ${detail}`);
     }
 
     for (const prop in x) {
@@ -25,13 +35,17 @@ function deepEqual(x, y) {
           return false;
         }
       } else {
-        return false;
+        throw new Error(`missing property ${prop}`);
       }
     }
 
     return true;
   }
-  return false;
+  const detail = JSON.stringify({
+    actual: { type: typeof x, value: x },
+    expected: { type: typeof y, value: y },
+  });
+  throw new Error(detail);
 }
 
 export async function test(label, run) {
@@ -44,14 +58,23 @@ export async function test(label, run) {
 
   const t = freeze({
     end() {
-      result = true;
+      if (result === null) {
+        result = true;
+      }
     },
     equal(a, b) {
       if (a !== b) {
         fail('not equal. IOU details');
       }
     },
-    deepEqual: (a, b) => deepEqual(a, b),
+    deepEqual(actual, expected) {
+      try {
+        deepEqual(actual, expected);
+      } catch (detail) {
+        const summary = JSON.stringify({ actual, expected });
+        fail(`not deepEqual: ${summary} : ${detail.message}`);
+      }
+    },
     throws(thunk, pattern) {
       try {
         thunk();
@@ -61,13 +84,19 @@ export async function test(label, run) {
       }
     },
     ok(a) {
-      result = !!a;
+      if (!a) {
+        fail('not ok');
+      }
     },
     notOk(a) {
-      result = !a;
+      if (a) {
+        fail('unexpected ok');
+      }
     },
     is(a, b) {
-      result = Object.is(a, b);
+      if (!Object.is(a, b)) {
+        fail('Object.is failed');
+      }
     },
   });
 
