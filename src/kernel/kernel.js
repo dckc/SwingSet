@@ -2,13 +2,13 @@ import harden from '@agoric/harden';
 import Nat from '@agoric/nat';
 import { QCLASS, makeMarshal } from '@agoric/marshal';
 
-import { makeLiveSlots } from './liveSlots';
-import { makeDeviceSlots } from './deviceSlots';
-import { makeCommsSlots } from './commsSlots/index';
-import makePromise from './makePromise';
-import makeVatManager from './vatManager';
-import makeDeviceManager from './deviceManager';
-import makeKernelKeeper from './state/kernelKeeper';
+import { makeLiveSlots } from 'kernel/liveSlots';
+import { makeDeviceSlots } from 'kernel/deviceSlots';
+import { makeCommsSlots } from 'kernel/commsSlots/index';
+import makePromise from 'kernel/makePromise';
+import makeVatManager from 'kernel/vatManager';
+import makeDeviceManager from 'kernel/deviceManager';
+import makeKernelKeeper from 'kernel/state/kernelKeeper';
 
 function abbreviateReviver(_, arg) {
   if (typeof arg === 'string' && arg.length >= 40) {

@@ -1,14 +1,14 @@
 import harden from '@agoric/harden';
 
 // state
-import makeState from './state/index';
+import makeState from 'kernel/commsSlots/state/index';
 
 // methods that can be called on the inital obj, 0
-import handleCommsController from './commsController';
-import makeMapOutbound from './outbound/mapOutbound';
+import handleCommsController from 'kernel/commsSlots/commsController';
+import makeMapOutbound from 'kernel/commsSlots/outbound/mapOutbound';
 
 // access to the outside world
-import makeInboundHandler from './inbound/inboundHandler';
+import makeInboundHandler from 'kernel/commsSlots/inbound/inboundHandler';
 
 export default function makeCommsSlots(syscall, _state, helpers) {
   const enableCSDebug = false;

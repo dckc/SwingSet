@@ -8,12 +8,13 @@
             "./main",
             "./preload"
         ],
-        "./*": [
-            "./*"
-        ],
-        "kernel/*": [
-            "../../src/kernel/*"
-        ],
+        "./*": ["./*" ],
+        "kernel/*": [ "../../src/kernel/*" ],
+        "kernel/commsSlots/*": [ "../../src/kernel/commsSlots/*" ],
+        "kernel/commsSlots/state/*": [ "../../src/kernel/commsSlots/state/*" ],
+        "kernel/commsSlots/outbound/*": [ "../../src/kernel/commsSlots/outbound/*" ],
+        "kernel/commsSlots/inbound/*": [ "../../src/kernel/commsSlots/inbound/*" ],
+        "kernel/state/*": [ "../../src/kernel/state/*" ],
 
         "@agoric/harden": "harden-xs/harden.esm",
         "@agoric/make-hardener": "../../node_modules/@agoric/make-hardener/index",
