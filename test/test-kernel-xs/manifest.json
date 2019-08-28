@@ -23,6 +23,7 @@
 
         "tape": "npm_facade/tape"
     },
+    "strip": [],
     "creation": {
         "stack": 4096
     }
