@@ -109,7 +109,7 @@ export async function test(label, run) {
   if (result === null) {
     fail('not ended');
   }
-  console.log(label, result ? 'PASS' : 'FAIL');
+  console.log(`  - [${result ? 'x' : ''}] ${label} ${result ? '' : ' - FAIL'}`);
 }
 
 test.skip = function skip(label) {
