@@ -26,7 +26,7 @@ function allstr(quasis, args) {
   for (let i = 1; i < quasis.length; i += 1) {
     parts.push(String(args[i - 1]), quasis[i]);
   }
-  console.log(parts.join(''));
+  return parts.join('');
 }
 
 function makeHardener(initialFringe) {
