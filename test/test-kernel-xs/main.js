@@ -1,11 +1,10 @@
 /* global trace */
 
 import { test } from 'tape';
-import { setImmediate } from './moddableTimer';
+
 import testQueuePriority from './test-queue-priority';
 import testMarshal from './test-marshal';
-
-import buildKernel from 'kernel/index';
+import testKernel from './test-kernel';
 
 export default function main() {
   trace('hi from test-kernel-xs with build task\n');
@@ -17,15 +16,7 @@ export default function main() {
 
   testQueuePriority(test);
   testMarshal(test);
-
-  test('build kernel', async t => {
-    const kernel = buildKernel({ setImmediate });
-    await kernel.start(); // empty queue
-    const data = kernel.dump();
-    t.deepEqual(data.vatTables, []);
-    t.deepEqual(data.kernelTable, []);
-    t.end();
-  });
+  testKernel(test);
 
   trace('end of main\n');
 }
