@@ -16,7 +16,7 @@
         "kernel/commsSlots/inbound/*": [ "../../src/kernel/commsSlots/inbound/*" ],
         "kernel/state/*": [ "../../src/kernel/state/*" ],
 
-        "@agoric/harden": "harden-xs/harden.esm",
+        "@agoric/harden": "harden-xs/harden-deep-freeze",
         "@agoric/make-hardener": "../../node_modules/@agoric/make-hardener/index",
         "@agoric/nat": "../../node_modules/@agoric/nat/dist/nat.esm",
         "@agoric/eventual-send": "eventual-send-xs/eventual-send.esm",
