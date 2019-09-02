@@ -3,6 +3,12 @@ import Nat from '@agoric/nat';
 import { QCLASS, mustPassByPresence, makeMarshal } from '@agoric/marshal';
 import makePromise from 'kernel/makePromise';
 
+// work-around for: cannot coerce undefined to object!
+// https://github.com/Moddable-OpenSource/moddable/issues/259
+function s(x) {
+  return String(x);
+}
+
 // 'makeLiveSlots' is a dispatcher which uses javascript Maps to keep track
 // of local objects which have been exported. These cannot be persisted
 // beyond the runtime of the javascript environment, so this mechanism is not
@@ -147,7 +153,7 @@ function build(syscall, _state, makeRoot, forVatID) {
     // the current Promise API doesn't give us a way to discover this, so we
     // must subscribe right away. If we were using Vows or some other
     // then-able, we could just hook then() to notify us.
-    lsdebug(`ls[${forVatID}].importPromise.importedPromiseThen ${id}`);
+    lsdebug(`ls[${s(forVatID)}].importPromise.importedPromiseThen ${id}`);
     importedPromiseThen(id);
     return p;
   }
